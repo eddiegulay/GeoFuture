@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block main_panel %}
+
 <div class="main-panel">
     <div class="row">
         <!-- Map Panel -->
@@ -51,45 +52,272 @@
             <div class="row mt-3">
                 {% comment %} landscape Information {% endcomment %}
                 <div class="col-12">
-                    <h3 class="font-weight-normal">landscape Information</h3>
+                    <h3 class="font-weight-normal">Satelite View</h3>
                 </div>
                 <div class="col-12" style="height: 300px;">
-                    <div id="contour-map" class="bg-danger rounded" style="height: 100%;"></div>
+                    <div id="contour-map" class="rounded" style="height: 100%;"></div>
                 </div>
             </div>
+
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3 class="font-weight-normal">Topography</h3>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Elevation</th>
+                            <th scope="col">Slope</th>
+                            <th scope="col">Aspect</th>
+                        </tr>
+
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1000m</td>
+                            <td>10%</td>
+                            <td>North</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3 class="font-weight-normal">Rock Information</h3>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Rock Type</th>
+                            <th scope="col">Rock Age</th>
+                            <th scope="col">Rock Hardness</th>
+                            <th scope="col">Rock Porosity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Granite</td>
+                            <td>1000m</td>
+                            <td>10%</td>
+                            <td>10%</td>
+                        </tr>
+
+                        <tr>
+                            <td>Carbon</td>
+                            <td>300m</td>
+                            <td>10%</td>
+                            <td>10%</td>
+                        </tr>
+
+                        <tr>
+                            <td>Graphite</td>
+                            <td>100m</td>
+                            <td>10%</td>
+                            <td>10%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3 class="font-weight-normal">General Soil Properties</h3>
+                </div>
+
+                <table class="table">
+                    
+                    <tbody>
+                        <tr>
+                            <th>Soil Type</td>
+                            <td>Clay</td>
+                        </tr>
+                        <tr>
+                            <th>Soil pH</td>
+                            <td>7.5</td>
+                        </tr>
+                        <tr>
+                            <th>Soil Moisture</td>
+                            <td>10%</td>
+                        </tr>
+                        <tr>
+                            <th>Soil Temperature</td>
+                            <td>10%</td>
+                        </tr>
+                    </tbody>
+                </table>
 
         </div>
     </div>
 
 
-    {% comment %} Page Scripts {% endcomment %}
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+    {% comment %} Page Scripts
+    
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
+
+    <script>
+        var lat = 0;
+        var long = 0;
+        function getLocation() {
+            // Ask the user for permission to access their location.
+            navigator.geolocation.getCurrentPosition(function(position) {
+              // The user has allowed access to their location.
+              // Get the user's latitude and longitude.
+              var latitude = position.coords.latitude;
+              var longitude = position.coords.longitude;
+          
+              lat = latitude;
+              long = longitude;
+            }, function(error) {
+              // The user has denied access to their location.
+              // ...
+            });
+          }
+          getLocation();
+
+        
+        // Create a new Mapbox GL JS map object.
+        var marker;
+        var global_map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        accessToken: 'pk.eyJ1IjoiZWRkaWVndWxsZWQiLCJhIjoiY2w5NWppb2JnMDJiazNubG42dnJmaWhpeSJ9.ypTxiUIVKR1bjuqbgUHR2g',
+        projection: 'globe'
+        });
+
+        global_map.on('style.load', () => {
+            global_map.setFog({
+                color: 'rgb(186, 210, 235)', // Lower atmosphere
+                'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
+                'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+                'space-color': 'rgb(11, 11, 25)', // Background color
+                'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
+            });
+            // add infrastructure layer
+            global_map.addLayer({
+                'id': 'infrastructure',
+                'type': 'line',
+                'source': {
+                'type': 'vector',
+                'url': 'mapbox://mapbox.mapbox-streets-v7'
+                },
+                'source-layer': 'road',
+                'layout': {
+                'visibility': 'visible',
+                'line-join': 'round',
+                'line-cap': 'round'
+                },
+                'paint': {
+                'line-color': '#ffffff',
+                'line-width': 1
+                }
+            });
+            global_map.setCenter([long, lat])
+            global_map.setZoom(8);
+
+            // drop a marker at current location
+            marker = new mapboxgl.Marker()
+                .setLngLat([long, lat])
+                .addTo(global_map);
+
+            // add event listenser to get map coordinates on click
+            global_map.on('click', function (e) {
+                var coordinates = e.lngLat;
+                var lat_clicked = coordinates.lat;
+                var long_clicked = coordinates.lng;
+                console.log('Longitude: ' + long + ' Latitude: ' + lat);
+                // move the marker to the clicked location
+                marker.setLngLat([long_clicked, lat_clicked]);
+            });
+
+        });
+
+    </script>
 
     <script>
         // Create a new Mapbox GL JS map object.
         var map = new mapboxgl.Map({
         container: 'contour-map',
-        style: 'mapbox://styles/mapbox/outdoors-v11',
-        accessToken: 'pk.eyJ1IjoiZWRkaWVndWxsZWQiLCJhIjoiY2w5NWppb2JnMDJiazNubG42dnJmaWhpeSJ9.ypTxiUIVKR1bjuqbgUHR2g'
+        style: 'mapbox://styles/mapbox/satellite-v9',
+        accessToken: 'pk.eyJ1IjoiZWRkaWVndWxsZWQiLCJhIjoiY2w5NWppb2JnMDJiazNubG42dnJmaWhpeSJ9.ypTxiUIVKR1bjuqbgUHR2g',
+        projection: 'globe'
+        });
+        map.on('style.load', () => {
+        map.setFog({
+            color: 'rgb(186, 210, 235)', // Lower atmosphere
+            'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
+            'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+            'space-color': 'rgb(11, 11, 25)', // Background color
+            'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
+            });
+
+            // add contour lines
+            map.addSource('contours', {
+                type: 'vector',
+                url: 'mapbox://mapbox.mapbox-terrain-v2'
+                });
+                map.addLayer({
+                'id': 'contours',
+                'type': 'line',
+                'source': 'contours',
+                'source-layer': 'contour',
+                'layout': {
+                'visibility': 'visible',
+                'line-join': 'round',
+                'line-cap': 'round'
+                },
+                'paint': {
+                'line-color': '#000000',
+                'line-width': 1
+                }
+            });
+            // rivers layer
+            map.addLayer({
+                'id': 'rivers',
+                'type': 'line',
+                'source': {
+                'type': 'vector',
+                'url': 'mapbox://mapbox.mapbox-streets-v7'
+                },
+                'source-layer': 'water',
+                'layout': {
+                'visibility': 'visible',
+                'line-join': 'round',
+                'line-cap': 'round'
+                },
+                'paint': {
+                'line-color': '#00ffff',
+                'line-width': 1
+                }
+            });
         });
 
-        // Add a contour layer to the map.
-        map.addLayer({
-        "id": "contours",
-        "type": "line",
-        "source": {
-            "type": "vector",
-            "url": "mapbox://mapbox.mapbox-terrain-v2"
-        },
-        "source-layer": "contour",
-        "paint": {
-            "line-color": "#ffffff"
-        }
-        });
-
-        // Set the center and zoom level of the map.
         map.setCenter([-6.8450, 39.2737]);
         map.setZoom(12);
+
+        // add event listenser to get map coordinates on click
+        global_map.on('click', function (e) {
+            var coordinates = e.lngLat;
+            var lat_clicked = coordinates.lat;
+            var long_clicked = coordinates.lng;
+            console.log('Longitude: ' + long + ' Latitude: ' + lat);
+            // move the marker to the clicked location
+            marker.setLngLat([long_clicked, lat_clicked]);
+
+            // set map fly center to clicked location
+            map.flyTo({
+                center: [long_clicked, lat_clicked],
+                essential: true // this animation is considered essential with respect to prefers-reduced-motion
+                });
+
+        });
     </script>
+    <style>.mapboxgl-ctrl-logo{display:none !important;}</style>
+
+    {% endcomment %}
 
 {% endblock %}

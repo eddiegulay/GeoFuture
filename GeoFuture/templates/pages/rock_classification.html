@@ -1,0 +1,63 @@
+{% extends 'pages/analytic_tools.html' %}
+{% load static %}
+
+{% block tool %}
+<div class="row mt-5">
+    <div class="col-md-12 grid-margin">
+      <div class="row">
+        <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+          <h3 class="font-weight-bold">Rock Classification</h3>
+          <h6 class="font-weight-normal mb-0">RockNet Pretrained Model Rock Classification</h6>
+        </div>
+
+        <div class="col-12 col-xl-4">
+         <div class="justify-content-end d-flex">
+          <!-- upload file-->
+            <div class="input-group col-12 col-xl-12 ">
+                <input type="file" class="form-control rounded" placeholder="Image">
+            </div>
+         </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-7 ">
+      <div class="card tale-bg">
+        <div class="card-people mt-auto">
+          <img src="" alt="Rock image" class="" style="display:none;">
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-5 grid-margin transparent">
+      <div class="row">
+        <div class="col-md-12 mb-4 stretch-card transparent">
+          <div class="card card-tale">
+            <div class="card-body">
+              
+              <table class="table"  style="display:none;">
+                <p class="mb-4 display-5">Rocks Detected</p>
+                <thead>
+                    <th>Rock Type</th>
+                    <th>Percentage</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rock 1</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>Rock 2</td>
+                        <td>20%</td>
+                    </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+{% endblock tool %}
+

@@ -63,19 +63,19 @@
                 <div class="col-12">
                     <h3 class="font-weight-normal">Topography</h3>
                 </div>
-
-                <table class="table">
+            
+                <table class="table" id="topography-table">
+                    <!-- Table headers go here -->
                     <thead>
                         <tr>
                             <th scope="col">Elevation</th>
                             <th scope="col">Slope</th>
                             <th scope="col">Aspect</th>
                         </tr>
-
-
                     </thead>
                     <tbody>
                         <tr>
+                            <!-- Data cells go here -->
                             <td>1000m</td>
                             <td>10%</td>
                             <td>North</td>
@@ -83,13 +83,14 @@
                     </tbody>
                 </table>
             </div>
-
+            
             <div class="row mt-5">
                 <div class="col-12">
                     <h3 class="font-weight-normal">Rock Information</h3>
                 </div>
-
-                <table class="table">
+            
+                <table class="table" id="rock-info-table">
+                    <!-- Table headers go here -->
                     <thead>
                         <tr>
                             <th scope="col">Rock Type</th>
@@ -99,20 +100,19 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Data rows go here -->
                         <tr>
                             <td>Granite</td>
                             <td>1000m</td>
                             <td>10%</td>
                             <td>10%</td>
                         </tr>
-
                         <tr>
                             <td>Carbon</td>
                             <td>300m</td>
                             <td>10%</td>
                             <td>10%</td>
                         </tr>
-
                         <tr>
                             <td>Graphite</td>
                             <td>100m</td>
@@ -122,15 +122,15 @@
                     </tbody>
                 </table>
             </div>
-
+            
             <div class="row mt-5">
                 <div class="col-12">
                     <h3 class="font-weight-normal">General Soil Properties</h3>
                 </div>
-
-                <table class="table">
-                    
+            
+                <table class="table" id="soil-properties-table">
                     <tbody>
+                        <!-- Data rows go here -->
                         <tr>
                             <th>Soil Type</td>
                             <td>Clay</td>
@@ -149,8 +149,8 @@
                         </tr>
                     </tbody>
                 </table>
-
             </div>
+            
         </div>
     </div>
 
@@ -317,6 +317,156 @@
 
         });
     </script>
+
     <style>.mapboxgl-ctrl-logo{display:none !important;}</style>
 
+
+    <script>
+        // Define an array of soil properties, topography, and land usage
+        const properties = [
+            {
+              key: "land_cover_2015",
+              text: "Land Cover (2015)"
+            },
+            {
+              key: "land_cover_2016",
+              text: "Land Cover (2016)"
+            },
+            {
+              key: "land_cover_2017",
+              text: "Land Cover (2017)"
+            },
+            {
+              key: "land_cover_2018",
+              text: "Land Cover (2018)"
+            },
+            {
+              key: "land_cover_2019",
+              text: "Land Cover (2019)"
+            },
+            {
+              key: "crop_cover_2015",
+              text: "Cropland (2015)"
+            },
+            {
+              key: "crop_cover_2016",
+              text: "Cropland (2016)"
+            },
+            {
+              key: "crop_cover_2017",
+              text: "Cropland (2017)"
+            },
+            {
+              key: "crop_cover_2018",
+              text: "Cropland (2018)"
+            },
+            {
+              key: "crop_cover_2019",
+              text: "Cropland (2019)"
+            },
+            {
+              key: "bedrock_depth",
+              text: "Depth to bedrock"
+            },
+            {
+              key: "cation_exchange_capacity",
+              text: "Effective Cation Exchange Capacity"
+            },
+            {
+              key: "fcc",
+              text: "Fertility Capability Classification"
+            },
+            {
+              key: "iron_extractable",
+              text: "Iron, extractable"
+            },
+            {
+              key: "magnesium_extractable",
+              text: "Magnesium, extractable"
+            },
+            {
+              key: "nitrogen_total",
+              text: "Nitrogen, total"
+            },
+            {
+              key: "phosphorous_extractable",
+              text: "Phosphorus, extractable"
+            },
+            {
+              key: "potassium_extractable",
+              text: "Potassium, extractable"
+            },
+            {
+              key: "sand_content",
+              text: "Sand content"
+            },
+            {
+              key: "silt_content",
+              text: "Silt content"
+            },
+            {
+              key: "slope_angle",
+              text: "Slope Angle"
+            },
+            {
+              key: "stone_content",
+              text: "Stone content"
+            },
+            {
+              key: "sulphur_extractable",
+              text: "Sulphur, extractable"
+            },
+            {
+              key: "texture_class",
+              text: "USDA Texture Class"
+            },
+            {
+              key: "zinc_extractable",
+              text: "Zinc, extractable"
+            },
+            {
+              key: "ph",
+              text: "pH"
+            }
+          ];
+          
+  
+  // Function to retrieve property value based on lat, lon, and depth
+    function getPropertyInfo(lat, lon, depth, propertyKey) {
+        const apiUrl = `https://api.isda-africa.com/v1/soilproperty?key=YOUR_API_KEY_HERE&lat=${lat}&lon=${lon}&property=${propertyKey}&depth=${depth}`;
+    
+        // Make an API request using fetch
+        return fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Handle the response data here
+            return data.value; // Adjust this based on the API response structure
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+            return null;
+        });
+    }
+    
+    // Example usage:
+    const lat = 9.4425;
+    const lon = -0.7770;
+    const depth = "0"; // Adjust the depth as needed
+    const propertyKey = "land_cover_2015"; // Specify the property key you want to retrieve
+    
+    getPropertyInfo(lat, lon, depth, propertyKey)
+        .then(value => {
+        if (value !== null) {
+            console.log(`Value for ${propertyKey} at (${lat}, ${lon}), depth ${depth}: ${value}`);
+        } else {
+            console.log(`Failed to retrieve data for ${propertyKey} at (${lat}, ${lon}), depth ${depth}`);
+        }
+    });
+
+    </script>
 {% endblock %}

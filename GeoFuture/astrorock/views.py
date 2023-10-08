@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import os
 
 # Create your views here.
 def init_view(request):
@@ -19,6 +20,8 @@ def rock_detection_view(request):
     return render(request, "pages/rock_detection.html")
 
 
+def rock_classification_view(request):
+    return render(request, "pages/rock_classification.html")
 
 
 

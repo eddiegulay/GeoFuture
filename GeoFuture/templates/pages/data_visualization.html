@@ -1,0 +1,151 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block main_panel %}
+
+<div class="main-panel">
+    <div class="main-panel">
+        <div class="row">
+            <!-- Left Panel -->
+            <div class="col-md-4 bg-light" style="height:100vh;">
+                <!-- subltle side panel title-->
+                <div class="container">
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-md-12 mt-5">
+                            <h3 class="text-center">Dataset Preview</h3>
+                            <!-- short description -->
+                            <p class="text-center">Select type of data you want to preview</p>
+                        </div>
+
+                        <div class="col-md-12 mt-5">
+                            <label for="dataset_categories">Select Dataset category</label>
+                            <select class="form-control form-control-lg" id="dataset_categories">
+                                <option>Mineral & Rock detection</option>
+                                <option>Mixed</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <label for="datasets">Select Dataset</label>
+                            <select class="form-control form-control-lg" id="datasets">
+                                <option>Mineral & Rock detection</option>
+                                <option>Mixed</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12 mt-5">
+                            <button class="btn btn-primary btn-block">Preview</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Panel -->
+            <div class="col-md-8 bg-primary">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- this is a sample input change from DATA collected from NASA EARTHDATA-->
+<script>
+
+    const geologicalProducts = {
+        LS8_SR: {
+          description: "Landsat 8 Surface Reflectance (LS8_SR): This product provides surface reflectance data for Landsat 8, which is a satellite that collects data in the visible, near-infrared, and shortwave infrared bands. This data can be used to map the distribution of different rock types.",
+          sampleDatasets: [
+            "Landsat 8 Surface Reflectance Collection 2 Level-1",
+            "Landsat 8 OLI/TIRS C2 L2 Surface Reflectance",
+            "Landsat 8 Surface Reflectance Collection 1 Level-2",
+            "Landsat 8 OLI/TIRS C1 L2 Surface Reflectance",
+            "Landsat 8 Surface Reflectance Collection 1 Level-1",
+            "Landsat 8 OLI/TIRS C1 L1 Surface Reflectance"
+          ]
+        },
+        ASTER_GDEM: {
+          description: "ASTER Global Digital Elevation Model (ASTER_GDEM): This product provides a global digital elevation model (DEM) at a 30-meter spatial resolution. DEMs can be used to identify topographic features that are associated with different rock types.",
+          sampleDatasets: [
+            "ASTER Global Digital Elevation Model V003",
+            "ASTER Global Digital Elevation Model (ASTGTM) V002",
+            "ASTER Global Digital Elevation Model (GDEM) V002",
+            "ASTER Global Digital Elevation Model (GDEM2) V002",
+            "ASTER Global Digital Elevation Model (GDEM3) V001",
+            "ASTER Global Digital Elevation Model (GDEM3) V002"
+          ]
+        },
+        ASTER_GLCM: {
+          description: "ASTER Global Land Cover Map (ASTER_GLCM): This product provides a global land cover map at a 30-meter spatial resolution. Land cover maps can be used to identify the distribution of different land cover types, such as forests, grasslands, and urban areas. Land cover types can be correlated with different rock types.",
+          sampleDatasets: [
+            "ASTER Global Land Cover Map (ASTER_GLCM) V003",
+            "ASTER Global Land Cover Map (GLCNMO) V001",
+            "ASTER Global Land Cover Map (GLC2000) V002",
+            "ASTER Global Land Cover Map (GLC2000) V003",
+            "ASTER Global Land Cover Map (GLC2000) V004",
+            "ASTER Global Land Cover Map (GLC2000) V005"
+          ]
+        },
+        ASTER_MIN: {
+          description: "ASTER Mineralogy (ASTER_MIN): This product provides mineralogy data for ASTER, which is a satellite that collects data in the thermal infrared band. Mineralogy data can be used to identify the distribution of different minerals, such as quartz, calcite, and dolomite. Different minerals are associated with different rock types.",
+          sampleDatasets: [
+            "ASTER Level 1 Precision Terrain Corrected Registered At-Sensor Radiance (AST_L1T)",
+            "ASTER Level 2 Surface Reflectance (AST_05)",
+            "ASTER Level 2 Emissivity (AST_07)",
+            "ASTER Level 2 Temperature (AST_08)",
+            "ASTER Level 3 Gridded Global Emissivity (AST_12)",
+            "ASTER Level 3 Gridded Global Temperature (AST_13)"
+          ]
+        },
+        MOD12Q1: {
+          description: "MODIS Land Cover Type Product (MOD12Q1): This product provides global land cover data at a 500-meter spatial resolution. Land cover data can be used to identify the distribution of different land cover types, such as forests, grasslands, and urban areas. Land cover types can be correlated with different rock types.",
+          sampleDatasets: [
+            "MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 500m SIN Grid V006 (MOD12Q1)",
+            "MODIS Land Cover Type Yearly Global 500m V005 (MOD12Q1)",
+            "MODIS/Terra Land Cover Type Yearly L3 Global 500m SIN Grid V006 (MOD12Q1)",
+            "MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 500m Grid V006 (MOD12Q1)",
+            "MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 500m SIN Grid V051 (MOD12Q1)",
+            "MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 500m Grid V051 (MOD12Q1)"
+          ]
+        }
+      };
+      
+    function populateCategories(){
+        const categorySelect = document.getElementById("dataset_categories");
+        categorySelect.innerHTML = "";
+        Object.keys(geologicalProducts).forEach((category) => {
+            const optionElement = document.createElement("option");
+            optionElement.text = category;
+            categorySelect.appendChild(optionElement);
+        });
+    }
+
+    populateCategories();
+
+
+    function populateDatasets() {
+        const categorySelect = document.getElementById("dataset_categories");
+        const datasetsSelect = document.getElementById("datasets");
+        const selectedCategory = categorySelect.value;
+        const selectedCategoryData = geologicalProducts[selectedCategory];
+
+        // Clear the current options in the "datasets" select
+        datasetsSelect.innerHTML = "";
+
+        // Populate the "datasets" select with options based on the selected category
+        selectedCategoryData.sampleDatasets.forEach((option) => {
+          const optionElement = document.createElement("option");
+          // add a 1.5s delay between each option being added to the "datasets" select
+            setTimeout(() => {
+                optionElement.selected = true;
+            }, 10000);
+          optionElement.text = option;
+          datasetsSelect.appendChild(optionElement);
+        });
+      }
+      
+      // Add an event listener to the "dataset_categories" select to trigger population of "datasets" on change
+      document.getElementById("dataset_categories").addEventListener("change", populateDatasets);
+      
+      // Initial action
+      populateDatasets();
+</script>
+
+{% endblock %}

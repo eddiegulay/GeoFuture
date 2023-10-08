@@ -20,13 +20,13 @@
                         <div class="col-md-12 mt-5">
                             <ul class="nav flex-column">
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="/geo-analytics">
+                                    <a class="nav-link active" href="/rock-detection">
                                         <i class="mdi mdi-earth"></i> Rock Type Identification
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/geo-coding">
-                                        <i class="mdi mdi-map-search-outline"></i> Stratigraphy Analysis
+                                    <a class="nav-link" href="/rock-classification">
+                                        <i class="mdi mdi-map-search-outline"></i> Rock Type Classification
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -55,7 +55,9 @@
                 </div>
             </div>
             <!-- Right Panel -->
-            <div class="col-md-8 bg-primary">
+            <div class="col-md-8">
+                {% block tool%} {%endblock%}
+            </div>
         </div>
     </div>
 </div>
